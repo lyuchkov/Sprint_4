@@ -1,6 +1,5 @@
-package pageobjects;
+package page_objects;
 
-import org.junit.Assert;
 import org.openqa.selenium.By;
 import org.openqa.selenium.JavascriptExecutor;
 import org.openqa.selenium.WebDriver;
@@ -10,43 +9,43 @@ import org.openqa.selenium.support.ui.WebDriverWait;
 
 import java.util.List;
 
-import static org.hamcrest.CoreMatchers.containsString;
-
 public class OrderPage {
     private final WebDriver driver;
 
     //Поле для имени
-    private final By firstNameInput = By.xpath("//*[@id=\"root\"]/div/div[2]/div[2]/div[1]/input");
+    private By firstNameInput = By.xpath(".//input[@placeholder='* Имя']");
     //Поле для фамилии
-    private final By lastNameInput = By.xpath("//*[@id=\"root\"]/div/div[2]/div[2]/div[2]/input");
+    private By lastNameInput = By.xpath(".//input[@placeholder='* Фамилия']");
     //Поле для адреса
-    private final By addressInput = By.xpath("//*[@id=\"root\"]/div/div[2]/div[2]/div[3]/input");
+    private By addressInput = By.xpath(".//input[@placeholder='* Адрес: куда привезти заказ']");
     //Поле для выбора станции метро
-    private final By metroStationInput = By.className("select-search__input");
+    private By metroStationInput = By.className("select-search__input");
     //Опции для выбора станции
-    private final By metroStationChoose = By.className("select-search__row");
+    private By metroStationChoose = By.className("select-search__row");
     //Поле для телефона
-    private final By phoneNumberInput = By.xpath("//*[@id=\"root\"]/div/div[2]/div[2]/div[5]/input");
+    private By phoneNumberInput = By.xpath(".//input[@placeholder='* Телефон: на него позвонит курьер']");
     //Кнопка далее
-    private final By submitButton = By.xpath("//*[@id=\"root\"]/div/div[2]/div[3]/button");
+    private By submitButton = By.xpath(".//button[text()='Далее']");
     //Чекбокс для черного самоката
-    private final By blackScooterCheckbox = By.id("black");
+    private By blackScooterCheckbox = By.id("black");
     //Чекбокс для серого самоката
-    private final By grayScooterCheckbox = By.id("grey");
+    private By grayScooterCheckbox = By.id("grey");
     //Выпадающий список с выбором времени аренды
-    private final By daysListButton = By.className("Dropdown-control");
+    private By daysListButton = By.className("Dropdown-control");
     //Поле для ввода даты
-    private final By dateInput = By.xpath("//*[@id=\"root\"]/div/div[2]/div[2]/div[1]/div[1]/div/input");
+    private By dateInput = By.xpath(".//input[@placeholder='* Когда привезти самокат']");
     //Поле для ввода комментария
-    private final By commentaryInput = By.xpath("//*[@id=\"root\"]/div/div[2]/div[2]/div[4]/input");
-    //Поле для отправки формы
-    private final By submitOrderFormButton = By.xpath("//*[@id=\"root\"]/div/div[2]/div[3]/button[2]");
+    private By commentaryInput = By.xpath(".//input[@placeholder='Комментарий для курьера']");
+    //Кнопка для отправки формы
+    private By submitOrderFormButton = By.xpath("(.//button[text()='Заказать'])[2]");
     //Поле для подтверждения отправки формы
-    private final By agreeButton = By.xpath("/html/body/div/div/div[2]/div[5]/div[2]/button[2]");
+    private By agreeButton = By.xpath("(.//button[text()='Да'])");
     //Заголовок во всплывающем окне с оформленным заказом
-    private final By orderIsCreatedTitle = By.className("Order_ModalHeader__3FDaJ");
+    private By orderIsCreatedTitle = By.className("Order_ModalHeader__3FDaJ");
     //Заголовок первой части формы
-    private final By title = By.className("Order_Header__BZXOb");
+    private By title = By.className("Order_Header__BZXOb");
+    //Кнопка выбора длительности аренды
+    private String daysQuantityOptionXpathPattern = "(.//div[@class='Dropdown-option'])[%d]";
 
     public OrderPage(WebDriver driver) {
         this.driver = driver;
@@ -69,7 +68,7 @@ public class OrderPage {
 
     public void selectDaysQuantity(int quantity) {
         driver.findElement(daysListButton).click();
-        driver.findElement(By.xpath("//*[@id=\"root\"]/div/div[2]/div[2]/div[2]/div[2]/div[" + quantity + "]")).click();
+        driver.findElement(By.xpath(String.format(daysQuantityOptionXpathPattern, quantity))).click();
     }
 
     public void markGrayScooterCheckbox() {
@@ -110,10 +109,10 @@ public class OrderPage {
     public void setLastName(String lastname){
         driver.findElement(lastNameInput).sendKeys(lastname);
     }
-    public void isOrderCreated() {
+    public boolean isOrderCreated() {
         new WebDriverWait(driver, 5).until(ExpectedConditions.visibilityOf(driver.findElement(orderIsCreatedTitle)));
         String text = driver.findElement(orderIsCreatedTitle).getText();
-        Assert.assertThat("Заказ не оформлен.",text, containsString("Заказ оформлен"));
+        return text.contains("Заказ оформлен");
     }
     public String getFormTitle(){
         return driver.findElement(title).getText();
